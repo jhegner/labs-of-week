@@ -8,7 +8,7 @@ public class EmailService {
 
         var emasilService = new EmailService();
         try (var service = new KafkaService(
-                FraudDetectorService.class.getSimpleName(),
+                EmailService.class.getSimpleName(),
                 "ECOMMERCE_SEND_EMAIL",
                 emasilService::parse)) {
             service.run();
