@@ -1,21 +1,18 @@
 package br.com.jhegner.labs.ecommerce;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.StringDeserializer;
-
-import java.time.Duration;
-import java.util.Collections;
-import java.util.Properties;
 
 public class EmailService {
 
     public static void main(String[] args) {
 
         var emasilService = new EmailService();
-        var service = new KafkaService("ECOMMERCE_SEND_EMAIL", emasilService::parse);
-        service.run();
+        try (var service = new KafkaService(
+                FraudDetectorService.class.getSimpleName(),
+                "ECOMMERCE_SEND_EMAIL",
+                emasilService::parse)) {
+            service.run();
+        }
     }
 
     private void parse(ConsumerRecord<String, String> record) {
