@@ -22,16 +22,19 @@ public class NewOrderMain {
 
         var producer = new KafkaProducer<String, String>(properties());
 
-        var key = UUID.randomUUID().toString();
+        for (var i = 0; i < 100; i++) {
 
-        var newOrder = "123123,231313,64564566";
-        var newOrderRecord = new ProducerRecord<>("ECOMMERCE_NEW_ORDER", key, newOrder);
+            var key = UUID.randomUUID().toString();
 
-        var email = "Obrigado pela compra!!!";
-        var emailRecord = new ProducerRecord<>("ECOMMERCE_SEND_EMAIL", key, email);
+            var newOrder = "123123,231313,64564566";
+            var newOrderRecord = new ProducerRecord<>("ECOMMERCE_NEW_ORDER", key, newOrder);
 
-        producer.send(newOrderRecord, getCallback()).get();
-        producer.send(emailRecord, getCallback()).get(1L, TimeUnit.MINUTES);
+            var email = "Obrigado pela compra!!!";
+            var emailRecord = new ProducerRecord<>("ECOMMERCE_SEND_EMAIL", key, email);
+
+            producer.send(newOrderRecord, getCallback()).get();
+            producer.send(emailRecord, getCallback()).get(1L, TimeUnit.MINUTES);
+        }
 
     }
 

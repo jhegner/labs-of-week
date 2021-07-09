@@ -6,32 +6,29 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
-public class FraudDetectorService {
+class KafkaService {
 
-    public static void main(String[] args) {
+    private final KafkaConsumer<String, String> consumer;
+    private final ConsumerFunction parse;
 
-        var consumer = new KafkaConsumer<String, String>(properties());
-        consumer.subscribe(Collections.singletonList("ECOMMERCE_NEW_ORDER"));
+    KafkaService(String topic, ConsumerFunction parse) {
+        this.parse = parse;
+        this.consumer = new KafkaConsumer<>(properties());
+        this.consumer.subscribe(Collections.singletonList(topic));
+    }
+
+    public void run() {
+
         while (true) {
             var records = consumer.poll(Duration.ofMillis(100));
             if (!records.isEmpty()) {
                 System.out.println("Encontrei " + records.count() + " registros");
                 for (var record : records) {
-                    System.out.println("---------------------------------------");
-                    System.out.println("Processando nova ordem, verificando fraude...");
-                    System.out.println(record.key());
-                    System.out.println(record.value());
-                    System.out.println(record.partition());
-                    System.out.println(record.offset());
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("Ordem processada");
+                    parse.consume(record);
                 }
             }
         }
