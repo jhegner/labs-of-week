@@ -11,7 +11,7 @@ public class NewOrderMain {
 
         try (
                 var dispactherOrder = new KafkaDispatcher<Order>();
-                var dispactherEmail = new KafkaDispatcher<String>()
+                var dispactherEmail = new KafkaDispatcher<Email>()
         ) {
 
             for (var i = 0; i < 10; i++) {
@@ -22,7 +22,7 @@ public class NewOrderMain {
                 var newOrder = new Order(userId, orderId, ammount);
                 dispactherOrder.send("ECOMMERCE_NEW_ORDER", userId, newOrder);
 
-                var email = "Obrigado pela compra!!!";
+                var email = new Email("Novo Email de Pedido", "Obrigado pela compra!!!");
                 dispactherEmail.send("ECOMMERCE_SEND_EMAIL", userId, email);
             }
         }
